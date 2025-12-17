@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>법무법인 예일법조</title>
+  <link href="https://cdn.jsdelivr.net/gh/sun-typeface/SUIT@2/fonts/static/woff2/SUIT.css" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="page-wrap">
+    <header class="site-header">
+      <div class="header-inner">
+        <div class="logo-area">
+          <img src="uhan-logo-black.png" alt="법무법인 예일법조 로고" class="logo-image" />
+        </div>
+        <nav class="header-nav">
+          <a href="#process" class="nav-link">절차</a>
+          <a href="#faq" class="nav-link">FAQ</a>
+          <a href="#review" class="nav-link">후기</a>
+          <a href="#inquiry" class="nav-link">문의하기</a>
+        </nav>
+        <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="메뉴 열기">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+    </header>
+
+    <div class="mobile-menu-overlay" id="mobileMenuOverlay"></div>
+    <div class="mobile-menu" id="mobileMenu">
+      <div class="mobile-menu-header">
+        <button class="mobile-menu-close" id="mobileMenuClose" aria-label="메뉴 닫기">×</button>
+      </div>
+      <nav class="mobile-nav">
+        <a href="#process" class="mobile-nav-link">절차</a>
+        <a href="#faq" class="mobile-nav-link">FAQ</a>
+        <a href="#review" class="mobile-nav-link">후기</a>
+        <a href="#inquiry" class="mobile-nav-link">문의하기</a>
+      </nav>
+    </div>
+
+    <main>
+      <section class="image-section section-1">
+        <picture>
+          <source media="(max-width: 768px)" srcset="images/mob/h-1-m.png" />
+          <img src="images/pc/h-1.png" alt="예일법조 이미지 1" class="section-img" />
+        </picture>
+        <div class="hero-content">
+          <p class="hero-text-1">혼자서 버티지마세요.</p>
+          <p class="hero-text-2">법으로 다시 시작할수 있습니다.</p>
+          <a href="#inquiry" class="hero-cta-button">상담신청</a>
+        </div>
+      </section>
+
+      <section class="image-card-section">
+        <div class="image-card-wrapper">
+          <div class="image-card card-left" data-index="0" id="process">
+            <picture>
+              <source media="(max-width: 768px)" srcset="images/mob/h-2-m.png" />
+              <img src="images/pc/h-2.png" alt="예일법조 이미지 2" class="card-img" />
+            </picture>
+          </div>
+
+          <div class="image-card card-right" data-index="1">
+            <picture>
+              <source media="(max-width: 768px)" srcset="images/mob/h-3-m.png" />
+              <img src="images/pc/h-3.png" alt="예일법조 이미지 3" class="card-img" />
+            </picture>
+          </div>
+
+          <div class="image-card card-left" data-index="2">
+            <picture>
+              <source media="(max-width: 768px)" srcset="images/mob/h-4-m.png" />
+              <img src="images/pc/h-4.png" alt="예일법조 이미지 4" class="card-img" />
+            </picture>
+          </div>
+
+          <div class="image-card card-right" data-index="3">
+            <picture>
+              <source media="(max-width: 768px)" srcset="images/mob/h-5-m.png" />
+              <img src="images/pc/h-5.png" alt="예일법조 이미지 5" class="card-img" />
+            </picture>
+          </div>
+
+          <div class="image-card card-left" data-index="4">
+            <picture>
+              <source media="(max-width: 768px)" srcset="images/mob/h-6-m.png" />
+              <img src="images/pc/h-6.png" alt="예일법조 이미지 6" class="card-img" />
+            </picture>
+          </div>
+
+          <div class="image-card card-right" data-index="5">
+            <picture>
+              <source media="(max-width: 768px)" srcset="images/mob/h-7-m.png" />
+              <img src="images/pc/h-7.png" alt="예일법조 이미지 7" class="card-img" />
+            </picture>
+          </div>
+
+          <div class="image-card card-left" data-index="6">
+            <picture>
+              <source media="(max-width: 768px)" srcset="images/mob/h-8-m.png" />
+              <img src="images/pc/h-8.png" alt="예일법조 이미지 8" class="card-img" />
+            </picture>
+          </div>
+
+          <div class="image-card card-right" data-index="7" id="faq">
+            <picture>
+              <source media="(max-width: 768px)" srcset="images/mob/h-9-m.png" />
+              <img src="images/pc/h-9.png" alt="예일법조 이미지 9" class="card-img" />
+            </picture>
+          </div>
+
+        </div>
+      </section>
+
+      <section class="review-section" id="review">
+        <h2 class="review-section-title">고객 후기</h2>
+        <div class="review-slider-wrap">
+          <div class="review-slider" id="reviewSlider">
+            <!-- JS에서 후기 더미 데이터가 삽입됩니다 -->
+          </div>
+        </div>
+      </section>
+
+      <section class="realtime-section">
+        <div class="realtime-title-wrap">
+          <img src="uhan-logo-black.png" alt="예일법조 로고" class="realtime-logo" />
+          <h2 class="realtime-title">실시간상담신청</h2>
+        </div>
+        <div class="realtime-list-wrap">
+          <div class="realtime-list" id="realtimeList">
+            <!-- JS에서 더미 데이터가 삽입됩니다 -->
+          </div>
+        </div>
+      </section>
+
+      <section class="inquiry-section" id="inquiry">
+        <div class="inquiry-inner">
+          <h2 class="inquiry-title">상담 신청</h2>
+          <p class="inquiry-subtitle">전문 변호사가 직접 상담해드립니다</p>
+          <form class="inquiry-form">
+            <div class="form-row">
+              <input type="text" id="name" name="name" placeholder="이름" required />
+            </div>
+            <div class="form-row">
+              <input type="tel" id="phone" name="phone" placeholder="연락처 (예: 010-0000-0000)" required />
+            </div>
+            <div class="form-row">
+              <select id="inquiryType" name="inquiryType" required>
+                <option value="">회생관련 문의유형을 선택하세요</option>
+                <option value="personal-rehabilitation">개인회생</option>
+                <option value="personal-bankruptcy">개인파산</option>
+                <option value="consultation">상담 문의</option>
+                <option value="other">기타</option>
+              </select>
+            </div>
+            <div class="form-row">
+              <textarea id="content" name="content" rows="4" placeholder="상담 내용을 간단히 적어주세요"></textarea>
+            </div>
+            <div class="form-row form-row-inline">
+              <label class="checkbox-label">
+                <input type="checkbox" id="agree" required />
+                <span>개인정보 수집 및 이용에 동의합니다</span>
+              </label>
+            </div>
+            <button type="submit" class="submit-button">상담 신청하기</button>
+          </form>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-inner">
+        <img src="uhan-logo-black.png" alt="예일법조 로고" class="footer-logo" />
+        <div class="footer-content">
+          <div class="footer-section">
+            <h3 class="footer-title">서울 본사</h3>
+            <p class="footer-text">(우:06648) 서울특별시 서초구 반포대로 98, 4층 (서초동, 일신빌딩)</p>
+            <p class="footer-text">전화: <a href="tel:02-3471-4788" class="footer-link">02-3471-4788</a> | 팩스: 02-539-3391</p>
+          </div>
+          <div class="footer-section">
+            <h3 class="footer-title">전국 사무소</h3>
+            <p class="footer-text">대구, 광주, 청주, 울산, 대전 소재 사무소 운영</p>
+          </div>
+          <div class="footer-section">
+            <p class="footer-text">© 2025 법무법인(유한) 예일법조. All Rights Reserved.</p>
+            <p class="footer-text">광고책임변호사: 하영주</p>
+            <p class="footer-text">개인정보관리책임자: 홍동수 | E-Mail: <a href="mailto:bupjo@naver.com" class="footer-link">bupjo@naver.com</a></p>
+          </div>
+          <div class="footer-section">
+            <p class="footer-disclaimer">본 페이지는 당 로펌의 홍보 및 관련 일반적인 법률정보를 제공해 드리기 위한 것이며, 구체적 법률 자문이나 사건 결과를 보장하는 것은 아닙니다.</p>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- PC 고정 하단 띠지 -->
+  <div class="fixed-bottom-bar" id="fixedBottomBar">
+    <div class="bottom-bar-content">
+      <img src="uhan-logo-black.png" alt="예일법조 로고" class="bottom-bar-logo" />
+      <form class="bottom-bar-form" id="bottomBarForm">
+        <input type="text" placeholder="이름" class="bottom-bar-input" required />
+        <input type="tel" placeholder="연락처" class="bottom-bar-input" required />
+        <select class="bottom-bar-select" required>
+          <option value="">문의유형</option>
+          <option value="personal-rehabilitation">개인회생</option>
+          <option value="personal-bankruptcy">개인파산</option>
+          <option value="consultation">상담 문의</option>
+          <option value="other">기타</option>
+        </select>
+        <button type="submit" class="bottom-bar-submit">상담신청하기</button>
+      </form>
+      <img src="ower.png" alt="변호사" class="bottom-bar-image" />
+    </div>
+  </div>
+
+  <!-- PC 고정 아이콘 (띠지 위 오른쪽 하단) -->
+  <div class="pc-fixed-icons">
+    <button class="pc-floating-btn pc-top-btn" id="btnTop" aria-label="위로 가기">
+      ↑
+    </button>
+    <a href="tel:02-3471-4788" class="pc-floating-btn pc-call-btn" aria-label="전화 상담">
+      ☎
+    </a>
+  </div>
+
+  <!-- 모바일 고정 하단 버튼 -->
+  <div class="mobile-fixed-bottom">
+    <button class="mobile-consult-btn" id="mobileConsultBtn">1:1 상담신청하기</button>
+    <div class="mobile-bottom-icons">
+      <button class="floating-btn floating-top mobile-top-btn" id="btnTopMobile" aria-label="위로 가기">
+        ↑
+      </button>
+      <a href="tel:02-3471-4788" class="floating-btn floating-call mobile-call-btn" aria-label="전화 상담">
+        ☎
+      </a>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
+
+
