@@ -7,8 +7,6 @@ const reviewData = [
   { name: "강x우", rating: 5, comment: "어려운 상황에서 희망을 주셔서 정말 감사합니다. 좋은 결과가 나왔어요.", date: "2024.01.03" },
   { name: "윤x희", rating: 5, comment: "전문 변호사님이 직접 상담해주셔서 신뢰가 갔습니다. 추천드려요!", date: "2024.01.01" },
   { name: "장x준", rating: 5, comment: "친절하고 상세한 설명 덕분에 제도 선택이 쉬웠습니다. 감사합니다.", date: "2023.12.28" },
-  { name: "임x아", rating: 5, comment: "빠른 응대와 정확한 절차 안내로 부담이 많이 줄었습니다.", date: "2023.12.25" },
-  { name: "한x성", rating: 5, comment: "처음 상담부터 마지막까지 꾸준히 도와주셔서 정말 감사드립니다.", date: "2023.12.22" },
 ];
 
 const dummyData = [
@@ -29,8 +27,8 @@ const dummyData = [
   { name: "배x연", phone: "010-xxxx-4567", content: "개인회생" },
 ];
 
-const CHUNK_SIZE = 4;
-const INTERVAL_MS = 2500;
+const CHUNK_SIZE = 3;
+const INTERVAL_MS = 3000;
 
 function createItemElement(item) {
   const el = document.createElement("div");
@@ -38,15 +36,15 @@ function createItemElement(item) {
 
   const nameEl = document.createElement("span");
   nameEl.className = "realtime-name";
-  nameEl.textContent = `이름: ${item.name}`;
+  nameEl.textContent = item.name;
 
   const phoneEl = document.createElement("span");
   phoneEl.className = "realtime-phone";
-  phoneEl.textContent = `연락처: ${item.phone}`;
+  phoneEl.textContent = item.phone;
 
   const contentEl = document.createElement("span");
   contentEl.className = "realtime-content";
-  contentEl.textContent = `문의내용: ${item.content}`;
+  contentEl.textContent = item.content;
 
   el.appendChild(nameEl);
   el.appendChild(phoneEl);
@@ -61,35 +59,48 @@ function setupRealtimeList() {
   const working = [...dummyData, ...dummyData, ...dummyData];
   let currentIndex = 0;
 
-  // 첫 번째 아이템 추가
-  const firstItem = createItemElement(working[currentIndex]);
-  firstItem.style.top = '0';
-  container.appendChild(firstItem);
+  // 초기 3개 아이템 추가
+  for (let i = 0; i < CHUNK_SIZE; i++) {
+    const item = createItemElement(working[currentIndex % working.length]);
+    item.style.top = `${i * 33.33}%`;
+    item.style.opacity = '1';
+    container.appendChild(item);
+    currentIndex++;
+  }
 
   setInterval(() => {
-    currentIndex = (currentIndex + 1) % working.length;
-    
-    // 기존 아이템 제거
-    const oldItem = container.querySelector('.realtime-item');
-    if (oldItem) {
-      oldItem.style.animation = 'slideUpReverse 0.5s ease-out forwards';
-      setTimeout(() => {
-        if (oldItem.parentNode) {
-          oldItem.parentNode.removeChild(oldItem);
-        }
-      }, 500);
-    }
+    // 기존 3개 아이템 제거 (위로 올라가며 사라짐)
+    const existingItems = Array.from(container.querySelectorAll('.realtime-item'));
+    existingItems.forEach((item) => {
+      item.style.transition = 'top 0.5s ease-out, opacity 0.5s ease-out';
+      item.style.top = '-33.33%';
+      item.style.opacity = '0';
+    });
 
-    // 새 아이템 추가 (아래에서 올라옴)
-    const newItem = createItemElement(working[currentIndex]);
-    newItem.style.top = '100%';
-    container.appendChild(newItem);
-    
-    // 애니메이션 트리거
+    // 새 3개 아이템 추가 (아래에서 올라옴)
     setTimeout(() => {
-      newItem.style.top = '0';
-      newItem.style.animation = 'slideUp 0.5s ease-out forwards';
-    }, 10);
+      existingItems.forEach(item => {
+        if (item.parentNode) {
+          item.parentNode.removeChild(item);
+        }
+      });
+
+      for (let i = 0; i < CHUNK_SIZE; i++) {
+        const newItem = createItemElement(working[currentIndex % working.length]);
+        newItem.style.top = '100%';
+        newItem.style.opacity = '0';
+        newItem.style.transition = 'top 0.5s ease-out, opacity 0.5s ease-out';
+        container.appendChild(newItem);
+        
+        // 애니메이션 트리거
+        requestAnimationFrame(() => {
+          newItem.style.top = `${i * 33.33}%`;
+          newItem.style.opacity = '1';
+        });
+        
+        currentIndex++;
+      }
+    }, 500);
   }, INTERVAL_MS);
 }
 
@@ -105,71 +116,106 @@ function createStarRating(rating) {
   return stars;
 }
 
-function createReviewElement(review) {
-  const el = document.createElement("div");
-  el.className = "review-item";
+function createReviewCard(review) {
+  const card = document.createElement("div");
+  card.className = "review-card";
 
   const header = document.createElement("div");
-  header.className = "review-header";
+  header.className = "review-card-header";
 
   const nameEl = document.createElement("div");
-  nameEl.className = "review-name";
+  nameEl.className = "review-card-name";
   nameEl.textContent = review.name;
 
   const ratingEl = createStarRating(review.rating);
-
   header.appendChild(nameEl);
   header.appendChild(ratingEl);
 
   const commentEl = document.createElement("div");
-  commentEl.className = "review-comment";
+  commentEl.className = "review-card-comment";
   commentEl.textContent = review.comment;
 
   const dateEl = document.createElement("div");
-  dateEl.className = "review-date";
+  dateEl.className = "review-card-date";
   dateEl.textContent = review.date;
 
-  el.appendChild(header);
-  el.appendChild(commentEl);
-  el.appendChild(dateEl);
-  return el;
+  card.appendChild(header);
+  card.appendChild(commentEl);
+  card.appendChild(dateEl);
+  return card;
 }
 
 function setupReviewSlider() {
   const container = document.getElementById("reviewSlider");
   if (!container) return;
 
-  const working = [...reviewData, ...reviewData, ...reviewData];
-  const fragment = document.createDocumentFragment();
-  working.forEach(review => {
-    fragment.appendChild(createReviewElement(review));
-  });
-  container.appendChild(fragment);
+  // PC: 2~3개씩 보이고 가로 슬라이더
+  if (window.innerWidth > 768) {
+    const working = [...reviewData, ...reviewData];
+    working.forEach(review => {
+      container.appendChild(createReviewCard(review));
+    });
 
-  let position = 0;
-  const itemWidth = 300;
-  const gap = 16;
-  const moveDistance = itemWidth + gap;
-  const visibleItems = 3;
-  const resetPosition = -(reviewData.length) * moveDistance;
+    let position = 0;
+    const cardWidth = 150;
+    const gap = 16;
+    const moveDistance = cardWidth + gap;
 
-  function moveSlider() {
-    position -= moveDistance;
-    
-    if (position <= resetPosition) {
-      position = 0;
-      container.style.transition = 'none';
-      container.style.transform = `translateX(${position}px)`;
-      setTimeout(() => {
+    setInterval(() => {
+      position -= moveDistance;
+      
+      if (position <= -(reviewData.length * moveDistance)) {
+        position = 0;
+        container.style.transition = 'none';
+        container.style.transform = `translateX(${position}px)`;
+        setTimeout(() => {
+          container.style.transition = 'transform 0.6s ease-in-out';
+        }, 50);
+      } else {
         container.style.transition = 'transform 0.6s ease-in-out';
-      }, 50);
-    } else {
-      container.style.transition = 'transform 0.6s ease-in-out';
-      container.style.transform = `translateX(${position}px)`;
-    }
-  }
+        container.style.transform = `translateX(${position}px)`;
+      }
+    }, 3000);
+  } 
+  // 모바일: 1개씩 보이고 가로 슬라이더
+  else {
+    const working = [...reviewData, ...reviewData, ...reviewData];
+    working.forEach(review => {
+      container.appendChild(createReviewCard(review));
+    });
 
-  setInterval(moveSlider, 3000);
+    let position = 0;
+    
+    function getCardWidth() {
+      const firstCard = container.querySelector('.review-card');
+      if (firstCard) {
+        return firstCard.offsetWidth;
+      }
+      return window.innerWidth - 32; // 패딩 고려
+    }
+
+    const gap = 16;
+    
+    function moveSliderMobile() {
+      const cardWidth = getCardWidth();
+      const moveDistance = cardWidth + gap;
+      position -= moveDistance;
+      
+      if (position <= -(reviewData.length * moveDistance)) {
+        position = 0;
+        container.style.transition = 'none';
+        container.style.transform = `translateX(${position}px)`;
+        setTimeout(() => {
+          container.style.transition = 'transform 0.6s ease-in-out';
+        }, 50);
+      } else {
+        container.style.transition = 'transform 0.6s ease-in-out';
+        container.style.transform = `translateX(${position}px)`;
+      }
+    }
+
+    setInterval(moveSliderMobile, 3000);
+  }
 }
 
 function setupImageCardAnimations() {
@@ -307,6 +353,84 @@ function setupMobileConsultButton() {
   }
 }
 
+function setupPetalsAnimation() {
+  const containers = document.querySelectorAll('.petals-container');
+  
+  containers.forEach(container => {
+    function createPetal() {
+      const petal = document.createElement('div');
+      petal.className = 'petal';
+      const startX = Math.random() * 200 - 100;
+      const drift = (Math.random() - 0.5) * 80;
+      petal.style.left = `${50 + startX / 2}%`;
+      petal.style.setProperty('--drift', `${drift}px`);
+      petal.style.animationDelay = `${Math.random() * 2}s`;
+      container.appendChild(petal);
+      
+      setTimeout(() => {
+        petal.remove();
+      }, 3000);
+    }
+    
+    // 초기 꽃가루 생성
+    for (let i = 0; i < 15; i++) {
+      setTimeout(() => createPetal(), i * 200);
+    }
+    
+    // 지속적으로 꽃가루 생성
+    setInterval(() => {
+      createPetal();
+    }, 400);
+  });
+}
+
+function setupMouseDragCircle() {
+  const dragCircle = document.getElementById("mouseDragCircle");
+  const heroSection = document.querySelector(".section-1");
+  
+  if (!dragCircle || !heroSection) return;
+
+  let isScrolling = false;
+  let scrollTimeout;
+
+  function updateCirclePosition(e) {
+    const rect = heroSection.getBoundingClientRect();
+    const x = e.clientX;
+    const y = e.clientY;
+
+    // 히어로 섹션 내부에 있을 때만 표시
+    if (x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom) {
+      dragCircle.style.left = x + 'px';
+      dragCircle.style.top = y + 'px';
+      dragCircle.classList.add('active');
+    } else {
+      dragCircle.classList.remove('active');
+    }
+  }
+
+  // 마우스 움직임 추적
+  heroSection.addEventListener('mousemove', updateCirclePosition);
+
+  // 마우스가 섹션을 벗어날 때
+  heroSection.addEventListener('mouseleave', () => {
+    dragCircle.classList.remove('active');
+  });
+
+  // 휠 이벤트로 활성화
+  heroSection.addEventListener('wheel', (e) => {
+    isScrolling = true;
+    dragCircle.classList.add('active');
+    
+    clearTimeout(scrollTimeout);
+    scrollTimeout = setTimeout(() => {
+      isScrolling = false;
+      if (!heroSection.matches(':hover')) {
+        dragCircle.classList.remove('active');
+      }
+    }, 500);
+  }, { passive: true });
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   setupReviewSlider();
   setupRealtimeList();
@@ -316,6 +440,8 @@ document.addEventListener("DOMContentLoaded", () => {
   setupTopButton();
   setupBottomBar();
   setupMobileConsultButton();
+  setupMouseDragCircle();
+  setupPetalsAnimation();
 });
 
 

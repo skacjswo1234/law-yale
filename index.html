@@ -39,18 +39,25 @@
         <a href="#review" class="mobile-nav-link">후기</a>
         <a href="#inquiry" class="mobile-nav-link">문의하기</a>
       </nav>
+      <div class="mobile-menu-footer">
+        <img src="uhan-logo-black.png" alt="법무법인 예일법조 로고" class="mobile-menu-logo" />
+      </div>
     </div>
 
-    <main>
-      <section class="image-section section-1">
+    <section class="image-section section-1">
         <picture>
           <source media="(max-width: 768px)" srcset="images/mob/h-1-m.png" />
           <img src="images/pc/h-1.png" alt="예일법조 이미지 1" class="section-img" />
         </picture>
         <div class="hero-content">
-          <p class="hero-text-1">혼자서 버티지마세요.</p>
-          <p class="hero-text-2">법으로 다시 시작할수 있습니다.</p>
-          <a href="#inquiry" class="hero-cta-button">상담신청</a>
+          <p class="hero-text-1 hero-text-1-mobile">혼자서 버티지마세요.</p>
+          <p class="hero-text-2 hero-text-2-mobile">법으로 다시 시작할수 있습니다.</p>
+          <div class="hero-button-wrapper hero-button-wrapper-pc">
+            <a href="#inquiry" class="hero-cta-button hero-cta-button-mobile">상담신청</a>
+            <div class="petals-container"></div>
+          </div>
+        </div>
+        <div class="mouse-drag-circle" id="mouseDragCircle">법무법인<br>예일법조</div>
         </div>
       </section>
 
@@ -130,6 +137,11 @@
           <h2 class="realtime-title">실시간상담신청</h2>
         </div>
         <div class="realtime-list-wrap">
+          <div class="realtime-header">
+            <span class="realtime-header-name">이름</span>
+            <span class="realtime-header-phone">연락처</span>
+            <span class="realtime-header-content">문의내용</span>
+          </div>
           <div class="realtime-list" id="realtimeList">
             <!-- JS에서 더미 데이터가 삽입됩니다 -->
           </div>
@@ -169,7 +181,6 @@
           </form>
         </div>
       </section>
-    </main>
 
     <footer class="site-footer">
       <div class="footer-inner">
@@ -177,7 +188,7 @@
         <div class="footer-content">
           <div class="footer-section">
             <h3 class="footer-title">서울 본사</h3>
-            <p class="footer-text">(우:06648) 서울특별시 서초구 반포대로 98, 4층 (서초동, 일신빌딩)</p>
+            <p class="footer-text">(우:06648) 서울특별시 서초구 반포대로 98,<br> 4층 (서초동, 일신빌딩)</p>
             <p class="footer-text">전화: <a href="tel:02-3471-4788" class="footer-link">02-3471-4788</a> | 팩스: 02-539-3391</p>
           </div>
           <div class="footer-section">
@@ -231,12 +242,12 @@
   <div class="mobile-fixed-bottom">
     <button class="mobile-consult-btn" id="mobileConsultBtn">1:1 상담신청하기</button>
     <div class="mobile-bottom-icons">
-      <button class="floating-btn floating-top mobile-top-btn" id="btnTopMobile" aria-label="위로 가기">
-        ↑
-      </button>
       <a href="tel:02-3471-4788" class="floating-btn floating-call mobile-call-btn" aria-label="전화 상담">
         ☎
       </a>
+      <button class="floating-btn floating-top mobile-top-btn" id="btnTopMobile" aria-label="위로 가기">
+        ↑
+      </button>
     </div>
   </div>
 
