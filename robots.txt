@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+
+# 관리자 페이지 제외
+Disallow: /admin.html
+Disallow: /admin.js
+Disallow: /functions/
+Disallow: /schema.sql
+Disallow: /wrangler.toml
+Disallow: /README_ADMIN.md
+
+# 사이트맵 위치
+Sitemap: https://yeilbeobjo.co.kr/sitemap.xml
