@@ -28,7 +28,19 @@ export const onRequest: PagesFunction<Env> = async (context) => {
   }
 
   try {
-    const body = await request.json();
+    let body;
+    try {
+      body = await request.json();
+    } catch (e) {
+      return new Response(
+        JSON.stringify({ success: false, error: 'JSON 파싱 오류' }),
+        {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
+    }
+    
     const { password } = body || {};
 
     if (!password) {
@@ -42,9 +54,9 @@ export const onRequest: PagesFunction<Env> = async (context) => {
     }
 
     // DB에서 관리자 비밀번호 조회
-    const queryResult = await env.DB.prepare('SELECT pw FROM admins ORDER BY id LIMIT 1').first();
+    const result = await env.DB.prepare('SELECT pw FROM admins ORDER BY id LIMIT 1').first();
     
-    if (!queryResult) {
+    if (!result) {
       return new Response(
         JSON.stringify({ success: false, error: '관리자 계정이 없습니다.' }),
         {
@@ -54,7 +66,7 @@ export const onRequest: PagesFunction<Env> = async (context) => {
       );
     }
 
-    const dbPassword = String((queryResult as any).pw || '');
+    const dbPassword = (result as any)?.pw;
     
     if (!dbPassword) {
       return new Response(
@@ -67,7 +79,7 @@ export const onRequest: PagesFunction<Env> = async (context) => {
     }
 
     // 비밀번호 비교
-    if (String(password) === dbPassword) {
+    if (password === dbPassword) {
       return new Response(
         JSON.stringify({ success: true }),
         {
@@ -84,9 +96,12 @@ export const onRequest: PagesFunction<Env> = async (context) => {
       );
     }
   } catch (error: any) {
-    console.error('Auth error:', error);
     return new Response(
-      JSON.stringify({ success: false, error: error?.message || '요청 처리 중 오류가 발생했습니다.' }),
+      JSON.stringify({ 
+        success: false, 
+        error: error?.message || '요청 처리 중 오류가 발생했습니다.',
+        details: error?.toString()
+      }),
       {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
