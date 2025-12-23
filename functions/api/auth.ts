@@ -42,9 +42,21 @@ export const onRequest: PagesFunction<Env> = async (context) => {
     }
 
     // DB에서 관리자 비밀번호 조회
-    const result = await env.DB.prepare('SELECT pw FROM admins ORDER BY id LIMIT 1').first();
+    const queryResult = await env.DB.prepare('SELECT pw FROM admins ORDER BY id LIMIT 1').first();
+    
+    if (!queryResult) {
+      return new Response(
+        JSON.stringify({ success: false, error: '관리자 계정이 없습니다.' }),
+        {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
+    }
 
-    if (!result || !result.pw) {
+    const dbPassword = (queryResult as any).pw;
+    
+    if (!dbPassword) {
       return new Response(
         JSON.stringify({ success: false, error: '관리자 계정이 없습니다.' }),
         {
@@ -55,7 +67,7 @@ export const onRequest: PagesFunction<Env> = async (context) => {
     }
 
     // 비밀번호 비교
-    if (password === result.pw) {
+    if (password === dbPassword) {
       return new Response(
         JSON.stringify({ success: true }),
         {
@@ -72,8 +84,9 @@ export const onRequest: PagesFunction<Env> = async (context) => {
       );
     }
   } catch (error: any) {
+    console.error('Auth error:', error);
     return new Response(
-      JSON.stringify({ success: false, error: '요청 처리 중 오류가 발생했습니다.' }),
+      JSON.stringify({ success: false, error: error?.message || '요청 처리 중 오류가 발생했습니다.' }),
       {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
