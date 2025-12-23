@@ -2,11 +2,8 @@ interface Env {
   DB: D1Database;
 }
 
-// 단순 비밀번호만 비교
-const ADMIN_PASSWORD = 'admin123';
-
 export const onRequest: PagesFunction<Env> = async (context) => {
-  const { request } = context;
+  const { request, env } = context;
   const method = request.method;
 
   // CORS 헤더
@@ -34,8 +31,31 @@ export const onRequest: PagesFunction<Env> = async (context) => {
     const body = await request.json();
     const { password } = body || {};
 
-    // 비밀번호 단순 비교
-    if (password === ADMIN_PASSWORD) {
+    if (!password) {
+      return new Response(
+        JSON.stringify({ success: false, error: '비밀번호가 필요합니다.' }),
+        {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
+    }
+
+    // DB에서 관리자 비밀번호 조회
+    const result = await env.DB.prepare('SELECT pw FROM admins ORDER BY id LIMIT 1').first();
+
+    if (!result || !result.pw) {
+      return new Response(
+        JSON.stringify({ success: false, error: '관리자 계정이 없습니다.' }),
+        {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
+    }
+
+    // 비밀번호 비교
+    if (password === result.pw) {
       return new Response(
         JSON.stringify({ success: true }),
         {
