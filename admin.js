@@ -1,0 +1,285 @@
+const API_BASE = '/api';
+
+// 페이지 로드 시 인증 확인
+const isLoggedIn = sessionStorage.getItem('adminLoggedIn') === 'true';
+if (isLoggedIn) {
+  showAdminScreen();
+  showSection('consultations');
+} else {
+  showLoginScreen();
+}
+
+// 로그인
+document.getElementById('loginForm')?.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const password = document.getElementById('password').value;
+
+  try {
+    const response = await fetch(`${API_BASE}/auth`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password }),
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+      sessionStorage.setItem('adminLoggedIn', 'true');
+      showAdminScreen();
+      showSection('consultations');
+    } else {
+      showError(result.error);
+    }
+  } catch (error) {
+    showError('로그인 중 오류가 발생했습니다.');
+  }
+});
+
+// 로그아웃
+function logout() {
+  sessionStorage.removeItem('adminLoggedIn');
+  showLoginScreen();
+}
+
+function showLoginScreen() {
+  document.getElementById('loginScreen').style.display = 'block';
+  document.getElementById('adminScreen').style.display = 'none';
+}
+
+function showAdminScreen() {
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('adminScreen').style.display = 'block';
+}
+
+function showError(message) {
+  const errorDiv = document.getElementById('loginError');
+  errorDiv.textContent = message;
+  errorDiv.style.display = 'block';
+  setTimeout(() => {
+    errorDiv.style.display = 'none';
+  }, 5000);
+}
+
+// 섹션 전환
+function showSection(sectionName) {
+  // 모든 섹션 숨기기
+  document.querySelectorAll('.content-section').forEach(section => {
+    section.classList.remove('active');
+  });
+
+  // 모든 사이드바 아이템 비활성화
+  document.querySelectorAll('.sidebar-item').forEach(item => {
+    item.classList.remove('active');
+  });
+
+  // 선택한 섹션 표시
+  const section = document.getElementById(`${sectionName}Section`);
+  if (section) {
+    section.classList.add('active');
+  }
+
+  // 사이드바 아이템 활성화
+  const sidebarItem = event?.target.closest('.sidebar-item');
+  if (sidebarItem) {
+    sidebarItem.classList.add('active');
+  }
+
+  // 모바일에서 사이드바 닫기
+  if (window.innerWidth <= 768) {
+    toggleSidebar();
+  }
+
+  // 섹션별 데이터 로드
+  if (sectionName === 'consultations') {
+    loadConsultations();
+  }
+}
+
+// 모바일 사이드바 토글
+function toggleSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebarOverlay');
+  
+  if (sidebar.classList.contains('active')) {
+    sidebar.classList.remove('active');
+    overlay.style.display = 'none';
+  } else {
+    sidebar.classList.add('active');
+    overlay.style.display = 'block';
+  }
+}
+
+// 초기 섹션 표시
+window.addEventListener('DOMContentLoaded', () => {
+  const isLoggedIn = sessionStorage.getItem('adminLoggedIn') === 'true';
+  if (isLoggedIn) {
+    const consultationsSection = document.getElementById('consultationsSection');
+    if (consultationsSection) {
+      consultationsSection.classList.add('active');
+    }
+    const sidebarItem = document.querySelector('.sidebar-item');
+    if (sidebarItem) {
+      sidebarItem.classList.add('active');
+    }
+  }
+});
+
+
+
+// 상담 신청 목록 로드
+async function loadConsultations() {
+  try {
+    const status = document.getElementById('statusFilter')?.value || '';
+    const url = status ? `${API_BASE}/consultations?status=${status}` : `${API_BASE}/consultations`;
+    
+    const response = await fetch(url);
+    const result = await response.json();
+
+    if (result.success) {
+      renderConsultationsTable(result.data);
+    }
+  } catch (error) {
+    console.error('상담 신청 로드 오류:', error);
+  }
+}
+
+function renderConsultationsTable(consultations) {
+  const table = document.getElementById('consultationsTable');
+  
+  if (consultations.length === 0) {
+    table.innerHTML = '<p>등록된 상담 신청이 없습니다.</p>';
+    return;
+  }
+
+  let html = `
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>이름</th>
+          <th>연락처</th>
+          <th>문의 유형</th>
+          <th>내용</th>
+          <th>상태</th>
+          <th>신청일</th>
+          <th>작업</th>
+        </tr>
+      </thead>
+      <tbody>
+  `;
+
+  consultations.forEach(consultation => {
+    const statusClass = `status-${consultation.status}`;
+    const statusText = {
+      'pending': '대기중',
+      'contacted': '연락완료',
+      'completed': '완료',
+      'cancelled': '취소'
+    }[consultation.status] || consultation.status;
+
+    html += `
+      <tr>
+        <td>${consultation.id}</td>
+        <td>${consultation.name}</td>
+        <td>${consultation.phone}</td>
+        <td>${consultation.inquiry_type}</td>
+        <td>${consultation.content || '-'}</td>
+        <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+        <td>${consultation.created_at}</td>
+        <td>
+          <button class="btn btn-primary" onclick="editConsultation(${consultation.id})">수정</button>
+          <button class="btn btn-danger" onclick="deleteConsultation(${consultation.id})">삭제</button>
+        </td>
+      </tr>
+    `;
+  });
+
+  html += '</tbody></table>';
+  table.innerHTML = html;
+}
+
+// 상담 신청 모달
+async function editConsultation(id) {
+  try {
+    const response = await fetch(`${API_BASE}/consultations`);
+    const result = await response.json();
+    
+    if (result.success) {
+      const consultation = result.data.find(c => c.id === id);
+      if (consultation) {
+        document.getElementById('consultationId').value = consultation.id;
+        document.getElementById('consultationName').value = consultation.name;
+        document.getElementById('consultationPhone').value = consultation.phone;
+        document.getElementById('consultationType').value = consultation.inquiry_type;
+        document.getElementById('consultationContent').value = consultation.content || '';
+        document.getElementById('consultationStatus').value = consultation.status;
+        document.getElementById('consultationNotes').value = consultation.notes || '';
+        
+        document.getElementById('consultationModal').classList.add('active');
+      }
+    }
+  } catch (error) {
+    console.error('상담 신청 데이터 로드 오류:', error);
+  }
+}
+
+function closeConsultationModal() {
+  document.getElementById('consultationModal').classList.remove('active');
+}
+
+document.getElementById('consultationForm')?.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  
+  const id = document.getElementById('consultationId').value;
+  const data = {
+    name: document.getElementById('consultationName').value,
+    phone: document.getElementById('consultationPhone').value,
+    inquiry_type: document.getElementById('consultationType').value,
+    content: document.getElementById('consultationContent').value,
+    status: document.getElementById('consultationStatus').value,
+    notes: document.getElementById('consultationNotes').value,
+  };
+
+  try {
+    if (id) {
+      data.id = parseInt(id);
+    }
+
+    const response = await fetch(`${API_BASE}/consultations`, {
+      method: id ? 'PUT' : 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+      closeConsultationModal();
+      loadConsultations();
+    } else {
+      alert('저장 중 오류가 발생했습니다: ' + result.error);
+    }
+  } catch (error) {
+    alert('저장 중 오류가 발생했습니다.');
+  }
+});
+
+async function deleteConsultation(id) {
+  if (!confirm('정말 삭제하시겠습니까?')) return;
+
+  try {
+    const response = await fetch(`${API_BASE}/consultations?id=${id}`, {
+      method: 'DELETE',
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+      loadConsultations();
+    } else {
+      alert('삭제 중 오류가 발생했습니다: ' + result.error);
+    }
+  } catch (error) {
+    alert('삭제 중 오류가 발생했습니다.');
+  }
+}
