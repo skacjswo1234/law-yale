@@ -1,18 +1,4 @@
-interface Env {
-  DB: D1Database;
-}
-
-interface Consultation {
-  id?: number;
-  name: string;
-  phone: string;
-  inquiry_type: string;
-  content?: string;
-  status?: string;
-  notes?: string;
-}
-
-export const onRequest: PagesFunction<Env> = async (context) => {
+export async function onRequest(context) {
   const { request, env } = context;
   const url = new URL(request.url);
   const method = request.method;
@@ -34,7 +20,7 @@ export const onRequest: PagesFunction<Env> = async (context) => {
     if (method === 'GET') {
       const status = url.searchParams.get('status');
       let query = 'SELECT * FROM consultations';
-      let params: any[] = [];
+      let params = [];
 
       if (status) {
         query += ' WHERE status = ?';
@@ -55,7 +41,7 @@ export const onRequest: PagesFunction<Env> = async (context) => {
 
     // POST: 상담 신청 생성
     if (method === 'POST') {
-      const body: Consultation = await request.json();
+      const body = await request.json();
 
       if (!body.name || !body.phone || !body.inquiry_type) {
         return new Response(
@@ -90,7 +76,7 @@ export const onRequest: PagesFunction<Env> = async (context) => {
 
     // PUT: 상담 신청 수정
     if (method === 'PUT') {
-      const body: Consultation = await request.json();
+      const body = await request.json();
 
       if (!body.id) {
         return new Response(
@@ -157,7 +143,7 @@ export const onRequest: PagesFunction<Env> = async (context) => {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       }
     );
-  } catch (error: any) {
+  } catch (error) {
     return new Response(
       JSON.stringify({ success: false, error: error.message }),
       {
@@ -166,4 +152,4 @@ export const onRequest: PagesFunction<Env> = async (context) => {
       }
     );
   }
-};
+}

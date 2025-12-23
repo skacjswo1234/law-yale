@@ -1,8 +1,4 @@
-interface Env {
-  DB: D1Database;
-}
-
-export const onRequest: PagesFunction<Env> = async (context) => {
+export async function onRequest(context) {
   const { request, env } = context;
   const method = request.method;
 
@@ -28,19 +24,7 @@ export const onRequest: PagesFunction<Env> = async (context) => {
   }
 
   try {
-    let body;
-    try {
-      body = await request.json();
-    } catch (e) {
-      return new Response(
-        JSON.stringify({ success: false, error: 'JSON 파싱 오류' }),
-        {
-          status: 400,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        }
-      );
-    }
-    
+    const body = await request.json();
     const { password } = body || {};
 
     if (!password) {
@@ -55,8 +39,8 @@ export const onRequest: PagesFunction<Env> = async (context) => {
 
     // DB에서 관리자 비밀번호 조회
     const result = await env.DB.prepare('SELECT pw FROM admins ORDER BY id LIMIT 1').first();
-    
-    if (!result) {
+
+    if (!result || !result.pw) {
       return new Response(
         JSON.stringify({ success: false, error: '관리자 계정이 없습니다.' }),
         {
@@ -66,20 +50,8 @@ export const onRequest: PagesFunction<Env> = async (context) => {
       );
     }
 
-    const dbPassword = (result as any)?.pw;
-    
-    if (!dbPassword) {
-      return new Response(
-        JSON.stringify({ success: false, error: '관리자 계정이 올바르지 않습니다.' }),
-        {
-          status: 401,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        }
-      );
-    }
-
     // 비밀번호 비교
-    if (password === dbPassword) {
+    if (password === result.pw) {
       return new Response(
         JSON.stringify({ success: true }),
         {
@@ -95,12 +67,11 @@ export const onRequest: PagesFunction<Env> = async (context) => {
         }
       );
     }
-  } catch (error: any) {
+  } catch (error) {
     return new Response(
       JSON.stringify({ 
         success: false, 
-        error: error?.message || '요청 처리 중 오류가 발생했습니다.',
-        details: error?.toString()
+        error: error?.message || '요청 처리 중 오류가 발생했습니다.'
       }),
       {
         status: 500,
@@ -108,4 +79,4 @@ export const onRequest: PagesFunction<Env> = async (context) => {
       }
     );
   }
-};
+}
