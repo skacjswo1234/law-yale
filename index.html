@@ -213,9 +213,9 @@
     <div class="bottom-bar-content">
       <img src="uhan-logo-black.png" alt="예일법조 로고" class="bottom-bar-logo" />
       <form class="bottom-bar-form" id="bottomBarForm">
-        <input type="text" placeholder="이름" class="bottom-bar-input" required />
-        <input type="tel" placeholder="연락처" class="bottom-bar-input" required />
-        <select class="bottom-bar-select" required>
+        <input type="text" name="name" id="bottomBarName" placeholder="이름" class="bottom-bar-input" required />
+        <input type="tel" name="phone" id="bottomBarPhone" placeholder="연락처" class="bottom-bar-input" required />
+        <select name="inquiryType" id="bottomBarType" class="bottom-bar-select" required>
           <option value="">문의유형</option>
           <option value="personal-rehabilitation">개인회생</option>
           <option value="personal-bankruptcy">개인파산</option>
@@ -248,6 +248,16 @@
       <button class="floating-btn floating-top mobile-top-btn" id="btnTopMobile" aria-label="위로 가기">
         ↑
       </button>
+    </div>
+  </div>
+
+  <!-- 성공 모달 -->
+  <div id="successModal" class="success-modal" style="display: none;">
+    <div class="success-modal-content">
+      <div class="success-modal-icon">✓</div>
+      <h2>상담 신청이 완료되었습니다</h2>
+      <p>빠른 시일 내에 연락드리겠습니다.</p>
+      <button class="success-modal-btn" onclick="closeSuccessModal()">확인</button>
     </div>
   </div>
 

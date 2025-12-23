@@ -331,13 +331,53 @@ function setupTopButton() {
 function setupBottomBar() {
   const bottomBarForm = document.getElementById("bottomBarForm");
   if (bottomBarForm) {
-    bottomBarForm.addEventListener("submit", (e) => {
+    bottomBarForm.addEventListener("submit", async (e) => {
       e.preventDefault();
-      const inquirySection = document.getElementById("inquiry");
-      if (inquirySection) {
-        inquirySection.scrollIntoView({ behavior: "smooth", block: "start" });
+      
+      const formData = {
+        name: document.getElementById("bottomBarName").value,
+        phone: document.getElementById("bottomBarPhone").value,
+        inquiry_type: document.getElementById("bottomBarType").value,
+        content: "",
+        status: "pending"
+      };
+
+      try {
+        const response = await fetch("/api/consultations", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          bottomBarForm.reset();
+          showSuccessModal();
+        } else {
+          alert("상담 신청 중 오류가 발생했습니다: " + (result.error || "알 수 없는 오류"));
+        }
+      } catch (error) {
+        console.error("Error submitting consultation:", error);
+        alert("상담 신청 중 오류가 발생했습니다.");
       }
     });
+  }
+}
+
+function showSuccessModal() {
+  const modal = document.getElementById("successModal");
+  if (modal) {
+    modal.style.display = "flex";
+  }
+}
+
+function closeSuccessModal() {
+  const modal = document.getElementById("successModal");
+  if (modal) {
+    modal.style.display = "none";
   }
 }
 
