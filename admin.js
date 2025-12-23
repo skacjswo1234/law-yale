@@ -102,12 +102,14 @@ function toggleSidebar() {
   const sidebar = document.getElementById('sidebar');
   const overlay = document.getElementById('sidebarOverlay');
   
+  if (!sidebar) return;
+  
   if (sidebar.classList.contains('active')) {
     sidebar.classList.remove('active');
-    overlay.style.display = 'none';
+    if (overlay) overlay.style.display = 'none';
   } else {
     sidebar.classList.add('active');
-    overlay.style.display = 'block';
+    if (overlay) overlay.style.display = 'block';
   }
 }
 
@@ -153,51 +155,95 @@ function renderConsultationsTable(consultations) {
     return;
   }
 
-  let html = `
-    <table>
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>이름</th>
-          <th>연락처</th>
-          <th>문의 유형</th>
-          <th>내용</th>
-          <th>상태</th>
-          <th>신청일</th>
-          <th>작업</th>
-        </tr>
-      </thead>
-      <tbody>
-  `;
+  const isMobile = window.innerWidth <= 768;
 
-  consultations.forEach(consultation => {
-    const statusClass = `status-${consultation.status}`;
-    const statusText = {
-      'pending': '대기중',
-      'contacted': '연락완료',
-      'completed': '완료',
-      'cancelled': '취소'
-    }[consultation.status] || consultation.status;
+  if (isMobile) {
+    // 모바일: 카드 형태로 표시
+    let html = '<div style="display: flex; flex-direction: column; gap: 16px;">';
+    
+    consultations.forEach(consultation => {
+      const statusClass = `status-${consultation.status}`;
+      const statusText = {
+        'pending': '대기중',
+        'contacted': '연락완료',
+        'completed': '완료',
+        'cancelled': '취소'
+      }[consultation.status] || consultation.status;
 
-    html += `
-      <tr>
-        <td>${consultation.id}</td>
-        <td>${consultation.name}</td>
-        <td>${consultation.phone}</td>
-        <td>${consultation.inquiry_type}</td>
-        <td>${consultation.content || '-'}</td>
-        <td><span class="status-badge ${statusClass}">${statusText}</span></td>
-        <td>${consultation.created_at}</td>
-        <td>
-          <button class="btn btn-primary" onclick="editConsultation(${consultation.id})">수정</button>
-          <button class="btn btn-danger" onclick="deleteConsultation(${consultation.id})">삭제</button>
-        </td>
-      </tr>
+      html += `
+        <div style="background: #FFFFFF; border: 1px solid #ddd; border-radius: 8px; padding: 16px;">
+          <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+            <div>
+              <div style="font-weight: 600; margin-bottom: 4px;">${consultation.name}</div>
+              <div style="font-size: 0.9rem; color: #666;">${consultation.phone}</div>
+            </div>
+            <span class="status-badge ${statusClass}">${statusText}</span>
+          </div>
+          <div style="margin-bottom: 8px;">
+            <span style="font-weight: 600; font-size: 0.85rem;">유형: </span>
+            <span style="font-size: 0.85rem;">${consultation.inquiry_type}</span>
+          </div>
+          ${consultation.content ? `<div style="margin-bottom: 8px; font-size: 0.85rem; color: #666;">${consultation.content}</div>` : ''}
+          <div style="margin-bottom: 12px; font-size: 0.8rem; color: #999;">${consultation.created_at}</div>
+          <div style="display: flex; gap: 8px;">
+            <button class="btn btn-primary" onclick="editConsultation(${consultation.id})" style="flex: 1;">수정</button>
+            <button class="btn btn-danger" onclick="deleteConsultation(${consultation.id})" style="flex: 1;">삭제</button>
+          </div>
+        </div>
+      `;
+    });
+
+    html += '</div>';
+    table.innerHTML = html;
+  } else {
+    // PC: 테이블 형태로 표시
+    let html = `
+      <div style="overflow-x: auto;">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>이름</th>
+              <th>연락처</th>
+              <th>문의 유형</th>
+              <th>내용</th>
+              <th>상태</th>
+              <th>신청일</th>
+              <th>작업</th>
+            </tr>
+          </thead>
+          <tbody>
     `;
-  });
 
-  html += '</tbody></table>';
-  table.innerHTML = html;
+    consultations.forEach(consultation => {
+      const statusClass = `status-${consultation.status}`;
+      const statusText = {
+        'pending': '대기중',
+        'contacted': '연락완료',
+        'completed': '완료',
+        'cancelled': '취소'
+      }[consultation.status] || consultation.status;
+
+      html += `
+        <tr>
+          <td>${consultation.id}</td>
+          <td>${consultation.name}</td>
+          <td>${consultation.phone}</td>
+          <td>${consultation.inquiry_type}</td>
+          <td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${consultation.content || '-'}</td>
+          <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+          <td>${consultation.created_at}</td>
+          <td>
+            <button class="btn btn-primary" onclick="editConsultation(${consultation.id})">수정</button>
+            <button class="btn btn-danger" onclick="deleteConsultation(${consultation.id})">삭제</button>
+          </td>
+        </tr>
+      `;
+    });
+
+    html += '</tbody></table></div>';
+    table.innerHTML = html;
+  }
 }
 
 // 상담 신청 모달
