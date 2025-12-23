@@ -3,6 +3,9 @@ export async function onRequest(context) {
   const url = new URL(request.url);
   const method = request.method;
 
+  // DB 바인딩 (바인딩 이름이 "law-yale-db")
+  const db = env['law-yale-db'];
+
   // CORS 헤더
   const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
@@ -29,7 +32,7 @@ export async function onRequest(context) {
 
       query += ' ORDER BY created_at DESC';
 
-      const { results } = await env.DB.prepare(query).bind(...params).all();
+      const { results } = await db.prepare(query).bind(...params).all();
 
       return new Response(
         JSON.stringify({ success: true, data: results }),
@@ -53,7 +56,7 @@ export async function onRequest(context) {
         );
       }
 
-      const result = await env.DB.prepare(
+      const result = await db.prepare(
         `INSERT INTO consultations (name, phone, inquiry_type, content, status)
          VALUES (?, ?, ?, ?, ?)`
       )
@@ -88,7 +91,7 @@ export async function onRequest(context) {
         );
       }
 
-      await env.DB.prepare(
+      await db.prepare(
         `UPDATE consultations 
          SET name = ?, phone = ?, inquiry_type = ?, content = ?, status = ?, notes = ?, updated_at = datetime('now', 'localtime')
          WHERE id = ?`
@@ -126,7 +129,7 @@ export async function onRequest(context) {
         );
       }
 
-      await env.DB.prepare('DELETE FROM consultations WHERE id = ?').bind(id).run();
+      await db.prepare('DELETE FROM consultations WHERE id = ?').bind(id).run();
 
       return new Response(
         JSON.stringify({ success: true }),

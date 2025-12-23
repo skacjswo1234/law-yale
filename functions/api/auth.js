@@ -2,6 +2,27 @@ export async function onRequest(context) {
   const { request, env } = context;
   const method = request.method;
 
+  // DB 확인 (바인딩 이름이 "law-yale-db")
+  const db = env['law-yale-db'];
+  
+  if (!env || !db) {
+    return new Response(
+      JSON.stringify({ 
+        success: false, 
+        error: 'DB 연결이 설정되지 않았습니다.',
+        hasEnv: !!env,
+        hasDB: !!db
+      }),
+      {
+        status: 500,
+        headers: { 
+          'Access-Control-Allow-Origin': '*',
+          'Content-Type': 'application/json' 
+        },
+      }
+    );
+  }
+
   // CORS 헤더
   const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
@@ -38,7 +59,7 @@ export async function onRequest(context) {
     }
 
     // DB에서 관리자 비밀번호 조회
-    const result = await env.DB.prepare('SELECT pw FROM admins ORDER BY id LIMIT 1').first();
+    const result = await db.prepare('SELECT pw FROM admins ORDER BY id LIMIT 1').first();
 
     if (!result || !result.pw) {
       return new Response(
@@ -68,10 +89,12 @@ export async function onRequest(context) {
       );
     }
   } catch (error) {
+    console.error('Auth error:', error);
     return new Response(
       JSON.stringify({ 
         success: false, 
-        error: error?.message || '요청 처리 중 오류가 발생했습니다.'
+        error: error?.message || '요청 처리 중 오류가 발생했습니다.',
+        details: error?.toString()
       }),
       {
         status: 500,
