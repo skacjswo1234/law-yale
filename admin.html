@@ -495,6 +495,9 @@
             <div class="sidebar-item active" onclick="showSection('consultations')">
               상담 신청 관리
             </div>
+            <div class="sidebar-item" onclick="showSection('password')">
+              비밀번호 변경
+            </div>
           </div>
           <div class="sidebar-footer">
             <button class="btn btn-secondary mobile-logout-btn" onclick="logout()" style="width: 100%;">로그아웃</button>
@@ -518,6 +521,28 @@
               </div>
             </div>
             <div id="consultationsTable"></div>
+          </div>
+
+          <!-- 비밀번호 변경 -->
+          <div id="passwordSection" class="content-section" style="background-color: #FFFFFF; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+            <h2>비밀번호 변경</h2>
+            <form id="passwordForm" style="max-width: 400px; margin-top: 20px;">
+              <div class="form-group">
+                <label>현재 비밀번호</label>
+                <input type="password" id="currentPassword" required />
+              </div>
+              <div class="form-group">
+                <label>새 비밀번호</label>
+                <input type="password" id="newPassword" required />
+              </div>
+              <div class="form-group">
+                <label>새 비밀번호 확인</label>
+                <input type="password" id="confirmPassword" required />
+              </div>
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary">변경하기</button>
+              </div>
+            </form>
           </div>
         </div>
       </div>

@@ -94,6 +94,9 @@ function showSection(sectionName) {
   // 섹션별 데이터 로드
   if (sectionName === 'consultations') {
     loadConsultations();
+  } else if (sectionName === 'password') {
+    // 비밀번호 변경 폼 초기화
+    document.getElementById('passwordForm').reset();
   }
 }
 
@@ -161,28 +164,35 @@ function renderConsultationsTable(consultations) {
     // 모바일: 카드 형태로 표시
     let html = '<div style="display: flex; flex-direction: column; gap: 16px;">';
     
-    consultations.forEach(consultation => {
-      const statusClass = `status-${consultation.status}`;
-      const statusText = {
-        'pending': '대기중',
-        'contacted': '연락완료',
-        'completed': '완료',
-        'cancelled': '취소'
-      }[consultation.status] || consultation.status;
+      consultations.forEach(consultation => {
+        const statusClass = `status-${consultation.status}`;
+        const statusText = {
+          'pending': '대기중',
+          'contacted': '연락완료',
+          'completed': '완료',
+          'cancelled': '취소'
+        }[consultation.status] || consultation.status;
 
-      html += `
-        <div style="background: #FFFFFF; border: 1px solid #ddd; border-radius: 8px; padding: 16px;">
-          <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
-            <div>
-              <div style="font-weight: 600; margin-bottom: 4px;">${consultation.name}</div>
-              <div style="font-size: 0.9rem; color: #666;">${consultation.phone}</div>
+        const inquiryTypeText = {
+          'personal-rehabilitation': '개인회생',
+          'personal-bankruptcy': '개인파산',
+          'consultation': '상담 문의',
+          'other': '기타'
+        }[consultation.inquiry_type] || consultation.inquiry_type;
+
+        html += `
+          <div style="background: #FFFFFF; border: 1px solid #ddd; border-radius: 8px; padding: 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+              <div>
+                <div style="font-weight: 600; margin-bottom: 4px;">${consultation.name}</div>
+                <div style="font-size: 0.9rem; color: #666;">${consultation.phone}</div>
+              </div>
+              <span class="status-badge ${statusClass}">${statusText}</span>
             </div>
-            <span class="status-badge ${statusClass}">${statusText}</span>
-          </div>
-          <div style="margin-bottom: 8px;">
-            <span style="font-weight: 600; font-size: 0.85rem;">유형: </span>
-            <span style="font-size: 0.85rem;">${consultation.inquiry_type}</span>
-          </div>
+            <div style="margin-bottom: 8px;">
+              <span style="font-weight: 600; font-size: 0.85rem;">유형: </span>
+              <span style="font-size: 0.85rem;">${inquiryTypeText}</span>
+            </div>
           ${consultation.content ? `<div style="margin-bottom: 8px; font-size: 0.85rem; color: #666;">${consultation.content}</div>` : ''}
           <div style="margin-bottom: 12px; font-size: 0.8rem; color: #999;">${consultation.created_at}</div>
           <div style="display: flex; gap: 8px;">
@@ -227,10 +237,15 @@ function renderConsultationsTable(consultations) {
       html += `
         <tr>
           <td>${consultation.id}</td>
-          <td>${consultation.name}</td>
-          <td>${consultation.phone}</td>
-          <td>${consultation.inquiry_type}</td>
-          <td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${consultation.content || '-'}</td>
+        <td>${consultation.name}</td>
+        <td>${consultation.phone}</td>
+        <td>${{
+          'personal-rehabilitation': '개인회생',
+          'personal-bankruptcy': '개인파산',
+          'consultation': '상담 문의',
+          'other': '기타'
+        }[consultation.inquiry_type] || consultation.inquiry_type}</td>
+        <td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${consultation.content || '-'}</td>
           <td><span class="status-badge ${statusClass}">${statusText}</span></td>
           <td>${consultation.created_at}</td>
           <td>
@@ -331,3 +346,37 @@ async function deleteConsultation(id) {
     alert('삭제 중 오류가 발생했습니다.');
   }
 }
+
+// 비밀번호 변경 폼 처리
+document.getElementById('passwordForm')?.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  
+  const currentPassword = document.getElementById('currentPassword').value;
+  const newPassword = document.getElementById('newPassword').value;
+  const confirmPassword = document.getElementById('confirmPassword').value;
+
+  if (newPassword !== confirmPassword) {
+    alert('새 비밀번호가 일치하지 않습니다.');
+    return;
+  }
+
+  try {
+    const response = await fetch(`${API_BASE}/password`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ currentPassword, newPassword }),
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+      alert('비밀번호가 변경되었습니다.');
+      document.getElementById('passwordForm').reset();
+    } else {
+      alert('비밀번호 변경 중 오류가 발생했습니다: ' + (result.error || '알 수 없는 오류'));
+    }
+  } catch (error) {
+    console.error('Password change error:', error);
+    alert('비밀번호 변경 중 오류가 발생했습니다.');
+  }
+});
