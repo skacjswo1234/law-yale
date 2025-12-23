@@ -245,7 +245,7 @@ function renderConsultationsTable(consultations) {
           'consultation': '상담 문의',
           'other': '기타'
         }[consultation.inquiry_type] || consultation.inquiry_type}</td>
-        <td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${consultation.content || '-'}</td>
+        <td style="max-width: 400px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${consultation.content || '-'}</td>
           <td><span class="status-badge ${statusClass}">${statusText}</span></td>
           <td>${consultation.created_at}</td>
           <td>

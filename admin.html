@@ -19,7 +19,7 @@
     }
 
     .container {
-      max-width: 1200px;
+      max-width: 1400px;
       margin: 0 auto;
       padding: 20px;
     }
@@ -50,6 +50,7 @@
       display: flex;
       align-items: center;
       gap: 16px;
+      flex: 1;
     }
 
     .pc-logout-btn {
@@ -71,8 +72,14 @@
     }
 
     @media (max-width: 768px) {
+      .header-left {
+        justify-content: space-between;
+      }
+
       .mobile-menu-toggle {
         display: block;
+        margin-left: auto;
+        margin-right: 0;
       }
 
       .pc-logout-btn {
@@ -133,6 +140,15 @@
       .sidebar-footer {
         padding: 20px;
         border-top: 1px solid rgba(0,0,0,0.1);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 16px;
+      }
+
+      .sidebar-footer-logo {
+        width: 120px;
+        height: auto;
       }
 
       .sidebar-close-btn {
@@ -290,10 +306,16 @@
     }
 
     th, td {
-      padding: 12px;
+      padding: 16px 20px;
       text-align: left;
       border-bottom: 1px solid #ddd;
       word-break: break-word;
+    }
+
+    @media (min-width: 769px) {
+      th, td {
+        padding: 20px 28px;
+      }
     }
 
     th {
@@ -501,6 +523,7 @@
           </div>
           <div class="sidebar-footer">
             <button class="btn btn-secondary mobile-logout-btn" onclick="logout()" style="width: 100%;">로그아웃</button>
+            <img src="uhan-logo-black.png" alt="법무법인 예일법조 로고" class="sidebar-footer-logo" />
           </div>
         </div>
 
