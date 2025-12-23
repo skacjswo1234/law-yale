@@ -381,6 +381,52 @@ function closeSuccessModal() {
   }
 }
 
+function setupInquiryForm() {
+  const inquiryForm = document.querySelector(".inquiry-form");
+  if (inquiryForm) {
+    inquiryForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      
+      const formData = {
+        name: document.getElementById("name").value,
+        phone: document.getElementById("phone").value,
+        inquiry_type: document.getElementById("inquiryType").value,
+        content: document.getElementById("content").value || "",
+        status: "pending"
+      };
+
+      // 동의 체크박스 확인
+      const agreeCheckbox = document.getElementById("agree");
+      if (!agreeCheckbox.checked) {
+        alert("개인정보 수집 및 이용에 동의해주세요.");
+        return;
+      }
+
+      try {
+        const response = await fetch("/api/consultations", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          inquiryForm.reset();
+          showSuccessModal();
+        } else {
+          alert("상담 신청 중 오류가 발생했습니다: " + (result.error || "알 수 없는 오류"));
+        }
+      } catch (error) {
+        console.error("Error submitting consultation:", error);
+        alert("상담 신청 중 오류가 발생했습니다.");
+      }
+    });
+  }
+}
+
 function setupMobileConsultButton() {
   const mobileConsultBtn = document.getElementById("mobileConsultBtn");
   if (mobileConsultBtn) {
@@ -479,6 +525,7 @@ document.addEventListener("DOMContentLoaded", () => {
   setupSmoothScroll();
   setupTopButton();
   setupBottomBar();
+  setupInquiryForm();
   setupMobileConsultButton();
   setupMouseDragCircle();
   setupPetalsAnimation();
