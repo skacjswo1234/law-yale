@@ -56,6 +56,10 @@
       display: block;
     }
 
+    .mobile-logout-btn {
+      display: none;
+    }
+
     .mobile-menu-toggle {
       display: none;
       background: none;
@@ -73,6 +77,18 @@
 
       .pc-logout-btn {
         display: none;
+      }
+
+      .mobile-logout-btn {
+        display: block;
+      }
+
+      .sidebar-header {
+        display: block;
+      }
+
+      .sidebar-footer {
+        display: block;
       }
 
       .admin-layout {
@@ -170,6 +186,18 @@
         height: fit-content;
         position: sticky;
         top: 20px;
+      }
+
+      .sidebar-header {
+        display: none;
+      }
+
+      .sidebar-footer {
+        display: none;
+      }
+
+      .sidebar-content {
+        padding: 0;
       }
 
       .main-content {
@@ -469,7 +497,7 @@
             </div>
           </div>
           <div class="sidebar-footer">
-            <button class="btn btn-secondary" onclick="logout()" style="width: 100%;">로그아웃</button>
+            <button class="btn btn-secondary mobile-logout-btn" onclick="logout()" style="width: 100%;">로그아웃</button>
           </div>
         </div>
 
