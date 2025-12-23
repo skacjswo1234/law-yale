@@ -48,26 +48,26 @@ export const onRequest: PagesFunction<Env> = async (context) => {
       return new Response(
         JSON.stringify({ success: false, error: '관리자 계정이 없습니다.' }),
         {
-          status: 500,
+          status: 401,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         }
       );
     }
 
-    const dbPassword = (queryResult as any).pw;
+    const dbPassword = String((queryResult as any).pw || '');
     
     if (!dbPassword) {
       return new Response(
-        JSON.stringify({ success: false, error: '관리자 계정이 없습니다.' }),
+        JSON.stringify({ success: false, error: '관리자 계정이 올바르지 않습니다.' }),
         {
-          status: 500,
+          status: 401,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         }
       );
     }
 
     // 비밀번호 비교
-    if (password === dbPassword) {
+    if (String(password) === dbPassword) {
       return new Response(
         JSON.stringify({ success: true }),
         {
