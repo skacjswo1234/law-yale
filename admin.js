@@ -158,9 +158,14 @@ function formatKoreaTime(dateString) {
     // 날짜 문자열을 Date 객체로 변환
     const date = new Date(dateString);
     
-    // 한국 시간대(Asia/Seoul, UTC+9)로 변환
-    // Intl.DateTimeFormat을 사용하여 정확한 시간대 변환
-    const formatter = new Intl.DateTimeFormat('ko-KR', {
+    // 유효하지 않은 날짜인 경우 원본 반환
+    if (isNaN(date.getTime())) {
+      console.warn('유효하지 않은 날짜:', dateString);
+      return dateString;
+    }
+    
+    // Intl.DateTimeFormat을 사용하여 한국 시간대로 정확히 변환
+    const options = {
       timeZone: 'Asia/Seoul',
       year: 'numeric',
       month: '2-digit',
@@ -169,9 +174,11 @@ function formatKoreaTime(dateString) {
       minute: '2-digit',
       second: '2-digit',
       hour12: false
-    });
+    };
     
+    const formatter = new Intl.DateTimeFormat('en-US', options);
     const parts = formatter.formatToParts(date);
+    
     const year = parts.find(p => p.type === 'year').value;
     const month = parts.find(p => p.type === 'month').value;
     const day = parts.find(p => p.type === 'day').value;
@@ -181,8 +188,8 @@ function formatKoreaTime(dateString) {
     
     return `${year}-${month}-${day} ${hour}:${minute}:${second}`;
   } catch (error) {
-    console.error('날짜 변환 오류:', error);
-    return dateString; // 변환 실패 시 원본 반환
+    console.error('날짜 변환 오류:', error, '원본:', dateString);
+    return dateString;
   }
 }
 
