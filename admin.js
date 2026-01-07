@@ -150,6 +150,42 @@ async function loadConsultations() {
   }
 }
 
+// 날짜를 한국 시간으로 변환하는 함수
+function formatKoreaTime(dateString) {
+  if (!dateString) return '-';
+  
+  try {
+    // 날짜 문자열을 Date 객체로 변환
+    const date = new Date(dateString);
+    
+    // 한국 시간대(Asia/Seoul, UTC+9)로 변환
+    // Intl.DateTimeFormat을 사용하여 정확한 시간대 변환
+    const formatter = new Intl.DateTimeFormat('ko-KR', {
+      timeZone: 'Asia/Seoul',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false
+    });
+    
+    const parts = formatter.formatToParts(date);
+    const year = parts.find(p => p.type === 'year').value;
+    const month = parts.find(p => p.type === 'month').value;
+    const day = parts.find(p => p.type === 'day').value;
+    const hour = parts.find(p => p.type === 'hour').value;
+    const minute = parts.find(p => p.type === 'minute').value;
+    const second = parts.find(p => p.type === 'second').value;
+    
+    return `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+  } catch (error) {
+    console.error('날짜 변환 오류:', error);
+    return dateString; // 변환 실패 시 원본 반환
+  }
+}
+
 function renderConsultationsTable(consultations) {
   const table = document.getElementById('consultationsTable');
   
@@ -194,7 +230,7 @@ function renderConsultationsTable(consultations) {
               <span style="font-size: 0.85rem;">${inquiryTypeText}</span>
             </div>
           ${consultation.content ? `<div style="margin-bottom: 8px; font-size: 0.85rem; color: #666;">${consultation.content}</div>` : ''}
-          <div style="margin-bottom: 12px; font-size: 0.8rem; color: #999;">${consultation.created_at}</div>
+          <div style="margin-bottom: 12px; font-size: 0.8rem; color: #999;">${formatKoreaTime(consultation.created_at)}</div>
           <div style="display: flex; gap: 8px;">
             <button class="btn btn-primary" onclick="editConsultation(${consultation.id})" style="flex: 1;">수정</button>
             <button class="btn btn-danger" onclick="deleteConsultation(${consultation.id})" style="flex: 1;">삭제</button>
@@ -247,7 +283,7 @@ function renderConsultationsTable(consultations) {
         }[consultation.inquiry_type] || consultation.inquiry_type}</td>
         <td style="max-width: 400px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${consultation.content || '-'}</td>
           <td><span class="status-badge ${statusClass}">${statusText}</span></td>
-          <td>${consultation.created_at}</td>
+          <td>${formatKoreaTime(consultation.created_at)}</td>
           <td>
             <button class="btn btn-primary" onclick="editConsultation(${consultation.id})">수정</button>
             <button class="btn btn-danger" onclick="deleteConsultation(${consultation.id})">삭제</button>
